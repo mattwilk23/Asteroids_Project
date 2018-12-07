@@ -30,8 +30,15 @@ class Ship(game_object):
         self.direction = [0,-1]
         
     def move(self):
+        #init_x = self.position[0]
+        #init_y = self.position[1]
         
-        pass
+        self.direction[0] = np.sin(self.angle)
+        self.direction[1] = -np.cos(self.angle)
+        
+        self.position[0] += self.direction[0]*self.speed
+        self.position[1] += self.direction[1]*self.speed
+
         
     def draw(self, screen):
         
@@ -66,16 +73,16 @@ class Asteroids_Game():
         self.White = (255,255,255)
                
         #FPS
-        self.FPS = 50
+        self.FPS = 60
        
         
         #timer
         self.clock = pygame.time.Clock()
         
-        #Initialize Ship Position
+        #Initialize Ship Position and angle
         
         self.ship = Ship([self.width*.45,self.height*.5])
-        
+        self.ship_ang = 0
    
     def run(self):
         
@@ -91,17 +98,18 @@ class Asteroids_Game():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         
-                        self.ship.angle += 10
-                        self.ship.angle %= 360
+                        self.ship_ang = 3
+                        
                     if event.key == pygame.K_RIGHT:
-                        self.ship.angle  -=  10
+                        self.ship_ang  =  -3
                         
                     if event.key == pygame.K_UP:
-                        pass
+                        self.ship.speed += 1
+                        
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                         
-                        self.ship.angle += 0
+                        self.ship_ang = 0
                         
             #Game Boundaries
  #           if self.x_change == 5:
@@ -114,18 +122,21 @@ class Asteroids_Game():
         #            self.x = self.width
          #       else:
           #          self.x += self.x_change
-                
-                
-                self.update_all()
+            
+            self.update_all()
                 
     
         pygame.quit()
 
     def update_all(self):
-        
+        self.ship.angle += self.ship_ang
         self.screen.fill(self.Black)  
         self.ship.draw(self.screen)
         pygame.display.update()
         self.clock.tick(self.FPS)
         
-    
+    def physics(self):
+        
+        self.ship.move()
+        
+        

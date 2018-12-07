@@ -41,15 +41,15 @@ while not crashed:
             crashed = True
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                cangle = 3
+                cangle = 2
             elif event.key == pygame.K_RIGHT:
-                cangle = -3
+                cangle = -2
                 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 cangle = 0
                 
-    
+    print(event)
     angle += cangle
     gameDisplay.fill(black)        
     ship(x,y,angle)   
