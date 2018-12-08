@@ -5,6 +5,8 @@ Created on Thu Dec  6 21:24:01 2018
 
 @author: matt
 """
+''' To run this game, in your console enter Asteroids_Game().run() or attach this command
+to the end of the code and you can run it from the command line'''
 
 import pygame
 import numpy as np
