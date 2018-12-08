@@ -33,8 +33,8 @@ class Ship(game_object):
         #init_x = self.position[0]
         #init_y = self.position[1]
         
-        self.direction[0] = np.sin(self.angle)
-        self.direction[1] = -np.cos(self.angle)
+        self.direction[0] = np.cos((self.angle+90)*np.pi/180)
+        self.direction[1] = -np.sin((self.angle+90)*np.pi/180)
         
         self.position[0] += self.direction[0]*self.velocity
         self.position[1] += self.direction[1]*self.velocity
