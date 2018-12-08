@@ -13,11 +13,11 @@ import numpy as np
 
 class game_object():
     
-    def __init__(self, image, position, velocity = 0):
+    def __init__(self, image, position, accel = 0):
         
         self.image = image
         self.position = position[:]
-        self.velocity = velocity
+        self.accel = accel
     
     def draw(self,screen):
         screen.blit(self.image,(self.position[0],self.position[1]))
@@ -38,8 +38,8 @@ class Ship(game_object):
         self.direction[0] = np.cos((self.angle+90)*np.pi/180)
         self.direction[1] = -np.sin((self.angle+90)*np.pi/180)
         
-        self.position[0] += self.direction[0]*self.velocity
-        self.position[1] += self.direction[1]*self.velocity
+        self.position[0] += self.direction[0]*self.accel
+        self.position[1] += self.direction[1]*self.accel
 
         
     def draw(self, screen):
@@ -83,7 +83,7 @@ class Asteroids_Game():
         
         #Initialize Ship Position and angle
         
-        self.ship = Ship([self.width*.45,self.height*.5])
+        self.ship = Ship([self.width*.46,self.height*.5])
         self.ship_ang = 0
    
     def run(self):
@@ -106,13 +106,14 @@ class Asteroids_Game():
                         self.ship_ang  =  -2
                         
                     if event.key == pygame.K_UP:
-                        self.ship.velocity += 1
+                        self.ship.accel += 1
                         
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                         
                         self.ship_ang = 0
-                        
+                    if event.key == pygame.K_UP:
+                        self.ship.accel += 0
             #Game Boundaries
  #           if self.x_change == 5:
   #              if self.x == self.width:
@@ -124,8 +125,10 @@ class Asteroids_Game():
         #            self.x = self.width
          #       else:
           #          self.x += self.x_change
+            
+            self.game_boundaries()
             self.ship.move()
-            print(self.ship.direction)
+            
             self.update_all()
                 
     
@@ -142,4 +145,14 @@ class Asteroids_Game():
         
         self.ship.move()
         
+    def game_boundaries(self):
+        
+        if self.ship.position[0] > self.width:
+            self.ship.position[0] = -46
+        if self.ship.position[0] < -46:
+            self.ship.position[0] = self.width
+        if self.ship.position[1] > self.height:
+            self.ship.position[1] = -90
+        if self.ship.position[1] < -90:
+            self.ship.position[1] = self.height
         
