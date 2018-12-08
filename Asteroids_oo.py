@@ -27,7 +27,7 @@ class Ship(game_object):
         super().__init__(pygame.image.load('spaceship-off.bmp'),position)
         self.angle = 0
         
-        self.direction = [0,-1]
+        self.direction = [0.0 , -1.0]
         
     def move(self):
         #init_x = self.position[0]
@@ -36,8 +36,8 @@ class Ship(game_object):
         self.direction[0] = np.sin(self.angle)
         self.direction[1] = -np.cos(self.angle)
         
-        self.position[0] += self.direction[0]*self.speed
-        self.position[1] += self.direction[1]*self.speed
+        self.position[0] += self.direction[0]*self.velocity
+        self.position[1] += self.direction[1]*self.velocity
 
         
     def draw(self, screen):
@@ -98,13 +98,13 @@ class Asteroids_Game():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         
-                        self.ship_ang = 3
+                        self.ship_ang = 2
                         
                     if event.key == pygame.K_RIGHT:
-                        self.ship_ang  =  -3
+                        self.ship_ang  =  -2
                         
                     if event.key == pygame.K_UP:
-                        self.ship.speed += 1
+                        self.ship.velocity += 1
                         
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
@@ -122,7 +122,8 @@ class Asteroids_Game():
         #            self.x = self.width
          #       else:
           #          self.x += self.x_change
-            
+            self.ship.move()
+            print(self.ship.direction)
             self.update_all()
                 
     
