@@ -29,22 +29,43 @@ class Ship(game_object):
         #initialize ship in the first position
         super().__init__(pygame.image.load('spaceship-off.bmp'),position)
         self.angle = 0
-        
         self.direction = [0.0 , -1.0]
+        self.max_speed = 10
         
     def move(self):
-        
-        
         
         self.direction[0] = np.cos((self.angle+90)*np.pi/180)
         self.direction[1] = -np.sin((self.angle+90)*np.pi/180)
         
-        self.vel[0] += self.direction[0] * self.accel * .2
-        self.vel[1] += self.direction[1] * self.accel * .2
+        #Conditions applying a max speed to ship and updating velocity
+        if self.direction[0] < 0:
+            if self.vel[0] < -self.max_speed:
+                self.vel[0] += 0
+            else:
+                self.vel[0] += self.direction[0] * self.accel
+                
+        if self.direction[0] > 0:
+            if self.vel[0] < self.max_speed:
+                self.vel[0] += self.direction[0] * self.accel
+            else:
+                self.vel[0] += 0
+         
+        if self.direction[1] < 0:
+            if self.vel[1] < -self.max_speed:
+                self.vel[1] += 0
+            else:
+                self.vel[1] += self.direction[1] * self.accel
+                
+        if self.direction[1] > 0:
+            if self.vel[1] < self.max_speed:
+                self.vel[1] += self.direction[1] * self.accel
+            else:
+                self.vel[1] += 0
         
+        #update position
         self.position[0] += self.vel[0]
         self.position[1] += self.vel[1]
-        #if self.accel == 1:
+        
             
         
     def draw(self, screen):
@@ -111,14 +132,14 @@ class Asteroids_Game():
                         self.ship_ang  =  -3
                         
                     if event.key == pygame.K_UP:
-                        self.ship.accel = 1
+                        self.ship.accel = .2
                         
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:                      
                         self.ship_ang = 0
                         
                     if event.key == pygame.K_UP:
-                        self.ship.accel = 0
+                            self.ship.accel = 0
 
             
             self.game_boundaries()
