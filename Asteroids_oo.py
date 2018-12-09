@@ -13,11 +13,12 @@ import numpy as np
 
 class game_object():
     
-    def __init__(self, image, position, accel = 0):
+    def __init__(self, image, position, accel = 0,vel = [0,0]):
         
         self.image = image
         self.position = position[:]
         self.accel = accel
+        self.vel = vel[:]
     
     def draw(self,screen):
         screen.blit(self.image,(self.position[0],self.position[1]))
@@ -32,15 +33,19 @@ class Ship(game_object):
         self.direction = [0.0 , -1.0]
         
     def move(self):
-        #init_x = self.position[0]
-        #init_y = self.position[1]
+        
+        
         
         self.direction[0] = np.cos((self.angle+90)*np.pi/180)
         self.direction[1] = -np.sin((self.angle+90)*np.pi/180)
         
-        self.position[0] += self.direction[0]*self.accel
-        self.position[1] += self.direction[1]*self.accel
-
+        self.vel[0] += self.direction[0] * self.accel * .2
+        self.vel[1] += self.direction[1] * self.accel * .2
+        
+        self.position[0] += self.vel[0]
+        self.position[1] += self.vel[1]
+        #if self.accel == 1:
+            
         
     def draw(self, screen):
         
@@ -100,31 +105,21 @@ class Asteroids_Game():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         
-                        self.ship_ang = 2
+                        self.ship_ang = 3
                         
                     if event.key == pygame.K_RIGHT:
-                        self.ship_ang  =  -2
+                        self.ship_ang  =  -3
                         
                     if event.key == pygame.K_UP:
-                        self.ship.accel += 1
+                        self.ship.accel = 1
                         
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                        
+                    if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:                      
                         self.ship_ang = 0
+                        
                     if event.key == pygame.K_UP:
-                        self.ship.accel += 0
-            #Game Boundaries
- #           if self.x_change == 5:
-  #              if self.x == self.width:
-   #                 self.x = -45
-    #            else:
-     #               self.x += self.x_change
-      #      if self.x_change == -5:
-       #         if self.x == -30:
-        #            self.x = self.width
-         #       else:
-          #          self.x += self.x_change
+                        self.ship.accel = 0
+
             
             self.game_boundaries()
             self.ship.move()
@@ -135,9 +130,12 @@ class Asteroids_Game():
         pygame.quit()
 
     def update_all(self):
+        #update ship
         self.ship.angle += self.ship_ang
         self.screen.fill(self.Black)  
         self.ship.draw(self.screen)
+        
+        #update all
         pygame.display.update()
         self.clock.tick(self.FPS)
         
