@@ -12,6 +12,13 @@ import pygame
 import numpy as np
 import random
 
+
+def distance(Point1,Point2):
+    '''This function takes in two, two dimensional points [x,y] and finds the distance
+       between them'''
+    return np.sqrt((Point2[0]-Point1[0])**2 + (Point2[1] - Point1[1])**2)
+
+
 class game_object():
     
     def __init__(self, image, position, accel = 0,vel = [0,0]):
@@ -181,7 +188,7 @@ class Asteroids_Game():
         #initialize asteroids
         self.asteroids = []
         
-        for i in range(4):
+        for i in range(5):
             x_int = random.randint(0, self.width)
             y_int = random.randint(0, self.height)
             
@@ -220,7 +227,7 @@ class Asteroids_Game():
                     if event.key == pygame.K_UP:
                             self.ship.accel = 0
 
-            print(self.ship.size())
+            print(len(self.ship.missiles))
             self.game_boundaries()
             self.move_all()
             
@@ -289,6 +296,14 @@ class Asteroids_Game():
                     roid.position[1] = -roid.image.get_height()
                 if roid.position[1] < -roid.image.get_height():
                     roid.position[1] = self.height
+                    
+        #This removes missiles when they get out of specified range         
+        if len(self.ship.missiles) > 0:
+            for missile in self.ship.missiles:
+                if (missile.position[0] > self.width + 250) or (missile.position[0] < -250):
+                    self.ship.missiles.remove(missile)
+                if (missile.position[1] > self.height + 250) or (missile.position[1] < -250):
+                    self.ship.missiles.remove(missile)
                     
     def collisions(self):
         
