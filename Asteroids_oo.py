@@ -23,6 +23,9 @@ class game_object():
     def draw(self,screen):
         screen.blit(self.image,(self.position[0],self.position[1]))
         
+    def size(self):
+        return [self.image.get_width(),self.image.get_height()]
+        
 class Ship(game_object):
     
     def __init__(self,position):
@@ -31,6 +34,8 @@ class Ship(game_object):
         self.angle = 0
         self.direction = [0.0 , -1.0]
         self.max_speed = 10
+        
+        self.missiles = []
         
     def move(self):
         
@@ -73,12 +78,40 @@ class Ship(game_object):
         self.ship_rot = pygame.transform.rotate(self.image,self.angle)
         
         screen.blit(self.ship_rot,(self.position[0],self.position[1]))
+        
+    def fire(self):
+        adjust = self.size()
+        adjust[0] = adjust[0]/2
+        adjust[1] = adjust[1]/2
+        add_missile = missile([self.position[0]+adjust[0],self.position[1]+adjust[1]],self.angle)
+        
+        self.missiles.append(add_missile)
     
     
 
 class missile(game_object):
     
-    pass
+    def __init__(self,position,angle,accel=12):
+        #accel is actually the velocity
+        super().__init__(pygame.image.load('missile.bmp'),position)
+        
+        self.angle = angle
+        self.direction = [0,0]
+        self.accel = accel
+        
+    
+    def move(self):
+        
+        self.direction[0] = np.cos((self.angle+90)*np.pi/180)
+        self.direction[1] = -np.sin((self.angle+90)*np.pi/180)
+        
+      
+        
+        #update position
+        self.position[0] +=self.direction[0]*self.accel
+        self.position[1] +=self.direction[1]*self.accel
+        
+            
 
 class asteroid(game_object):
     
@@ -132,7 +165,10 @@ class Asteroids_Game():
                         self.ship_ang  =  -3
                         
                     if event.key == pygame.K_UP:
-                        self.ship.accel = .2
+                        self.ship.accel = .4
+                    
+                    if event.key == pygame.K_SPACE:
+                        self.ship.fire()
                         
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:                      
@@ -141,9 +177,9 @@ class Asteroids_Game():
                     if event.key == pygame.K_UP:
                             self.ship.accel = 0
 
-            
+            print(self.ship.size())
             self.game_boundaries()
-            self.ship.move()
+            self.move_all()
             
             self.update_all()
                 
@@ -155,13 +191,19 @@ class Asteroids_Game():
         self.ship.angle += self.ship_ang
         self.screen.fill(self.Black)  
         self.ship.draw(self.screen)
-        
+        if len(self.ship.missiles) > 0:
+            for missile in self.ship.missiles:
+                missile.draw(self.screen)
         #update all
         pygame.display.update()
         self.clock.tick(self.FPS)
         
-    def physics(self):
+    def move_all(self):
         
+        if len(self.ship.missiles) > 0:
+            for missile in self.ship.missiles:
+                missile.move()
+                
         self.ship.move()
         
     def game_boundaries(self):
