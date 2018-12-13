@@ -13,7 +13,7 @@ screen_h = 600
 black = (0,0,0)
 white = (255,255,255)
 
-spaceshipIMG = pygame.image.load('spaceship-off.bmp')
+spaceshipIMG = pygame.image.load('rock-big.bmp')
 
 def ship(x,y,angle):
     turn = pygame.transform.rotate(spaceshipIMG, angle)
