@@ -16,7 +16,7 @@ import random
 def distance(Point1,Point2):
     '''This function takes in two, two dimensional points [x,y] and finds the distance
        between them'''
-    return np.sqrt((Point2[0]-Point1[0])**2 + (Point2[1] - Point1[1])**2)
+    return float(np.sqrt((Point2[0]-Point1[0])**2 + (Point2[1] - Point1[1])**2))
 
 
 class game_object():
@@ -31,9 +31,12 @@ class game_object():
     def draw(self,screen):
         screen.blit(self.image,(self.position[0],self.position[1]))
         
-    def size(self):
+    def size_IMG(self):
         return [self.image.get_width(),self.image.get_height()]
-        
+    
+    def center(self):
+        return [self.position[0] + self.size_IMG()[0]/2 , self.position[1] + self.size_IMG()[1]/2]
+    
 class Ship(game_object):
     
     def __init__(self,position):
@@ -88,7 +91,7 @@ class Ship(game_object):
         screen.blit(self.ship_rot,(self.position[0],self.position[1]))
         
     def fire(self):
-        adjust = self.size()
+        adjust = self.size_IMG()
         adjust[0] = adjust[0]/2
         adjust[1] = adjust[1]/2
         add_missile = missile([self.position[0]+adjust[0],self.position[1]+adjust[1]],self.angle)
@@ -226,11 +229,13 @@ class Asteroids_Game():
                         
                     if event.key == pygame.K_UP:
                             self.ship.accel = 0
-
-            print(len(self.ship.missiles))
+                         
             self.game_boundaries()
-            self.move_all()
             
+            
+                    
+            self.move_all()
+            self.collisions()
             self.update_all()
                 
     
@@ -245,15 +250,15 @@ class Asteroids_Game():
         self.ship.angle += self.ship_ang
         self.ship.draw(self.screen)
         
-        #Draw missiles
-        if len(self.ship.missiles) > 0:
-            for missile in self.ship.missiles:
-                missile.draw(self.screen)
-                
         #Draw asteroids     
         if len(self.asteroids) > 0:
             for roid in self.asteroids:
                 roid.draw(self.screen)
+        
+        #Draw missiles
+        if len(self.ship.missiles) > 0:
+            for missile in self.ship.missiles:
+                missile.draw(self.screen)
                 
         #update all
         pygame.display.update()
@@ -302,10 +307,49 @@ class Asteroids_Game():
             for missile in self.ship.missiles:
                 if (missile.position[0] > self.width + 250) or (missile.position[0] < -250):
                     self.ship.missiles.remove(missile)
-                if (missile.position[1] > self.height + 250) or (missile.position[1] < -250):
+                elif (missile.position[1] > self.height + 250) or (missile.position[1] < -250):
                     self.ship.missiles.remove(missile)
                     
     def collisions(self):
         
-        pass
+        if len(self.ship.missiles) > 0:
+            for missile in self.ship.missiles:
+                if len(self.asteroids) > 0:
+                    for roid in self.asteroids:
+                        if roid.size == "big":
+                            if distance(missile.center(),roid.center()) < 100:
+                            
+                                self.ship.missiles.remove(missile)                            
+                                size = "normal"
+                                temp_pos = roid.position
+                                self.new_asteroids(temp_pos,size)
+                                self.asteroids.remove(roid)
+                                break
+                            
+                        elif roid.size == "normal":
+                            if distance(missile.center(),roid.center()) < 60:
+                                self.ship.missiles.remove(missile)
+                                size = "small"
+                                temp_pos = roid.position
+                                self.new_asteroids(temp_pos,size)
+                                self.asteroids.remove(roid)
+                                break
+                            
+                        else:
+                            if distance(missile.center(),roid.center()) < 30:
+                                self.ship.missiles.remove(missile)
+                                self.asteroids.remove(roid)
+          
+    def new_asteroids(self, position, size):
+        
+        if size == "normal":
+            for i in range(2):
+                temp_roid = asteroid(position, size, accel = 4)
+                self.asteroids.append(temp_roid)
+                
+        if size == "small":
+            for i in range(2):
+                temp_roid = asteroid(position, size, accel = 5)
+                self.asteroids.append(temp_roid)
+        
         
