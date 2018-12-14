@@ -1,0 +1,31 @@
+
+In order to play Asteroids_oo.py you will first need to install Pygame.
+Pygame can be installed with the included executable shell script 
+install_pygame.sh, just in the command line run ./install_pygame.sh  
+
+pygame install may take some time and will be on the solving environment
+screen for a while but it should eventually install
+
+Once pygame is installed you can run the Asteroids game by using the command
+python Asteroids_oo.py in the command line (If this doesnt work you may have 
+					    to open the file and uncomment 
+					    Asteroids_Game().run() at the 
+					    bottom of the script.)
+
+CONTROLS
+_____________________________________
+
+LEFT arrow rotates your ship counter-clockwise
+
+RIGHT arrow rotates your ship clockwise
+
+UP arrow accelerates your ship in the direction you are facing
+
+SPACEBAR fires projectiles from your ship in the direction you are facing
+
+
+GOAL
+_______________________________
+
+Shoot and dodge asteroids the best you can earning points for each asteroid 
+destroyed
