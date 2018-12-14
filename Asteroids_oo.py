@@ -11,7 +11,7 @@ to the end of the code and you can run it from the command line'''
 import pygame
 import numpy as np
 import random
-
+import time
 
 def distance(Point1,Point2):
     '''This function takes in two, two dimensional points [x,y] and finds the distance
@@ -180,6 +180,7 @@ class Asteroids_Game():
         #FPS
         self.FPS = 60
        
+        self.running = True
         
         #timer
         self.clock = pygame.time.Clock()
@@ -192,22 +193,33 @@ class Asteroids_Game():
         self.asteroids = []
         
         for i in range(5):
-            x_int = random.randint(0, self.width)
-            y_int = random.randint(0, self.height)
+            if random.randrange(0,2) == 0:
+                x_int = random.randint(0, int(self.width/3))
+            else:
+                x_int = random.randint(int(self.width*2/3), int(self.width * .9))
+                
+            if random.randrange(0,2) == 0:
+                y_int = random.randint(0, int(self.height/3))
+            else:
+                y_int = random.randint(int(self.height*2/3), int(self.height * .9))
             
             temp_roid = asteroid([x_int,y_int], "big")
             self.asteroids.append(temp_roid)
         
     def run(self):
         
-        running = True
+        #et = time.time()
         
-        while running:
+        while self.running:
             
+         #   time = time.time()
+            
+        #    if time - et > 30:
+                
             for event in pygame.event.get():
                 
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.running = False
                     
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
@@ -312,6 +324,7 @@ class Asteroids_Game():
                     
     def collisions(self):
         
+        #Missile to Asteroid Collisions
         if len(self.ship.missiles) > 0:
             for missile in self.ship.missiles:
                 if len(self.asteroids) > 0:
@@ -339,6 +352,21 @@ class Asteroids_Game():
                             if distance(missile.center(),roid.center()) < 30:
                                 self.ship.missiles.remove(missile)
                                 self.asteroids.remove(roid)
+                                
+        #Ship to Asteoid Collisoins                   
+#        if len(self.asteroids) > 0:
+ #           for roid in self.asteroids:
+  #              if roid.size == "big":
+   #                 if distance(self.ship.center(),roid.center()) < 125:
+    #                    self.running = False
+     #           
+      #          elif roid.size == "normal":
+       #             if distance(self.ship.center(),roid.center()) < 85:
+        #                self.running = False
+         #               
+          #      else:
+           #         if distance(self.ship.center(),roid.center()) < 55:
+            #            self.running = False
           
     def new_asteroids(self, position, size):
         
@@ -352,4 +380,4 @@ class Asteroids_Game():
                 temp_roid = asteroid(position, size, accel = 5)
                 self.asteroids.append(temp_roid)
         
-        
+     
