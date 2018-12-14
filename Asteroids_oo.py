@@ -185,36 +185,32 @@ class Asteroids_Game():
         #timer
         self.clock = pygame.time.Clock()
         
+        #Initialize game score and lives
+        self.score = 0
+        self.lives = 3
+        
         #Initialize Ship Position and angle
         self.ship = Ship([self.width*.46,self.height*.5])
         self.ship_ang = 0
+        self.fire_rate = .25
+        self.fire_time = []
         
         #initialize asteroids
         self.asteroids = []
-        
-        for i in range(5):
-            if random.randrange(0,2) == 0:
-                x_int = random.randint(0, int(self.width/3))
-            else:
-                x_int = random.randint(int(self.width*2/3), int(self.width * .9))
-                
-            if random.randrange(0,2) == 0:
-                y_int = random.randint(0, int(self.height/3))
-            else:
-                y_int = random.randint(int(self.height*2/3), int(self.height * .9))
-            
-            temp_roid = asteroid([x_int,y_int], "big")
-            self.asteroids.append(temp_roid)
+        self.spawn_rate = 20 #5 new Asteroids spawn at this rate
+        self.fresh_asteroids(self.ship.center())
         
     def run(self):
         
-        #et = time.time()
+        et = time.time()
         
         while self.running:
             
-         #   time = time.time()
+            time_p = time.time()
             
-        #    if time - et > 30:
+            if time_p - et > self.spawn_rate:
+                self.fresh_asteroids(self.ship.center())
+                et = time.time()
                 
             for event in pygame.event.get():
                 
@@ -233,14 +229,26 @@ class Asteroids_Game():
                         self.ship.accel = .4
                     
                     if event.key == pygame.K_SPACE:
-                        self.ship.fire()
                         
+                        self.ship.fire()
+                       
+  #                      print(len(self.fire_time))
+   #                     if len(self.fire_time) == 0:
+    #                        self.ship.fire()
+     #                       self.fire_time.append(time.time())
+      ##                      e_firetime = time.time()
+        #                else:
+         #                   if self.fire_time[0] - e_firetime < self.fire_rate: 
+          #                      self.ship.fire()
+           #                     self.fire_time[0] = time.time()
+            #                    e_firetime = time.time()
+
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:                      
                         self.ship_ang = 0
                         
                     if event.key == pygame.K_UP:
-                            self.ship.accel = 0
+                        self.ship.accel = 0
                          
             self.game_boundaries()
             
@@ -250,7 +258,7 @@ class Asteroids_Game():
             self.collisions()
             self.update_all()
                 
-    
+        print('You scored a total of {} points!!'.format(self.score))
         pygame.quit()
 
     def update_all(self):
@@ -305,6 +313,7 @@ class Asteroids_Game():
         #This keeps the asteroids on the screen
         if len(self.asteroids) > 0:
             for roid in self.asteroids:
+
                 if roid.position[0] > self.width:
                     roid.position[0] = -roid.image.get_width()
                 if roid.position[0] < -roid.image.get_width():
@@ -327,11 +336,13 @@ class Asteroids_Game():
         #Missile to Asteroid Collisions
         if len(self.ship.missiles) > 0:
             for missile in self.ship.missiles:
+
                 if len(self.asteroids) > 0:
                     for roid in self.asteroids:
+
                         if roid.size == "big":
                             if distance(missile.center(),roid.center()) < 100:
-                            
+                                self.score += 10
                                 self.ship.missiles.remove(missile)                            
                                 size = "normal"
                                 temp_pos = roid.position
@@ -341,6 +352,7 @@ class Asteroids_Game():
                             
                         elif roid.size == "normal":
                             if distance(missile.center(),roid.center()) < 60:
+                                self.score += 20
                                 self.ship.missiles.remove(missile)
                                 size = "small"
                                 temp_pos = roid.position
@@ -350,23 +362,24 @@ class Asteroids_Game():
                             
                         else:
                             if distance(missile.center(),roid.center()) < 30:
+                                self.score += 30
                                 self.ship.missiles.remove(missile)
                                 self.asteroids.remove(roid)
                                 
         #Ship to Asteoid Collisoins                   
-#        if len(self.asteroids) > 0:
- #           for roid in self.asteroids:
-  #              if roid.size == "big":
-   #                 if distance(self.ship.center(),roid.center()) < 125:
-    #                    self.running = False
-     #           
-      #          elif roid.size == "normal":
-       #             if distance(self.ship.center(),roid.center()) < 85:
-        #                self.running = False
-         #               
-          #      else:
-           #         if distance(self.ship.center(),roid.center()) < 55:
-            #            self.running = False
+        if len(self.asteroids) > 0:
+            for roid in self.asteroids:
+                if roid.size == "big":
+                    if distance(self.ship.center(),roid.center()) < 125:
+                        self.running = False
+                
+                elif roid.size == "normal":
+                    if distance(self.ship.center(),roid.center()) < 85:
+                        self.running = False
+                        
+                else:
+                    if distance(self.ship.center(),roid.center()) < 55:
+                        self.running = False
           
     def new_asteroids(self, position, size):
         
@@ -375,9 +388,29 @@ class Asteroids_Game():
                 temp_roid = asteroid(position, size, accel = 4)
                 self.asteroids.append(temp_roid)
                 
-        if size == "small":
+        elif size == "small":
             for i in range(2):
                 temp_roid = asteroid(position, size, accel = 5)
                 self.asteroids.append(temp_roid)
+                
+    def fresh_asteroids(self,ship_position):
         
-     
+        for i in range(5):
+            if random.randrange(0,2) == 0:
+                x_int = random.randint(0, int(self.width/3))
+            else:
+                x_int = random.randint(int(self.width*2/3), int(self.width * .9))
+                
+            if random.randrange(0,2) == 0:
+                y_int = random.randint(0, int(self.height/3))
+            else:
+                y_int = random.randint(int(self.height*2/3), int(self.height * .9))
+            
+            #if the asteroid spawned is near the ship dont place it
+            if distance([x_int + 100,y_int + 100], ship_position) > 160:
+                temp_roid = asteroid([x_int,y_int], "big")
+                self.asteroids.append(temp_roid)
+                
+        
+            
+Asteroids_Game().run()     
